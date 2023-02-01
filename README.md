@@ -1,0 +1,1 @@
+# `@beerush/browser-utils`

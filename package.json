@@ -1,0 +1,39 @@
+{
+  "name": "@beerush/browser-utils",
+  "version": "0.0.1",
+  "description": "Beerush Browser-Only Utilities",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
+  "typings": "lib/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/esm/index.d.ts",
+      "import": "./lib/esm/index.js",
+      "require": "./lib/cjs/index.cjs"
+    }
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "files": [
+    "lib/"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "npm run clean && tsc -p tsconfig.json --watch",
+    "build": "npm run clean && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "clean": "rimraf ./lib",
+    "prepublish": "npm run build"
+  },
+  "author": "Nanang Mahdaen El Agung <mahdaen@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "rimraf": "^4.1.2",
+    "ts-toolbelt": "^9.6.0",
+    "typedoc": "^0.23.24",
+    "typescript": "^4.9.5"
+  }
+}
