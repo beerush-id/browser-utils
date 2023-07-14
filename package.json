@@ -6,10 +6,41 @@
   "module": "lib/esm/index.js",
   "typings": "lib/esm/index.d.ts",
   "exports": {
+    "./package.json": "./package.json",
     ".": {
       "types": "./lib/esm/index.d.ts",
       "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.cjs"
+      "require": "./lib/cjs/index.js"
+    },
+    "./clipboard": {
+      "types": "./lib/esm/clipboard.d.ts",
+      "import": "./lib/esm/clipboard.js",
+      "require": "./lib/cjs/clipboard.js"
+    },
+    "./css": {
+      "types": "./lib/esm/css.d.ts",
+      "import": "./lib/esm/css.js",
+      "require": "./lib/cjs/css.js"
+    },
+    "./mockup": {
+      "types": "./lib/esm/mockup.d.ts",
+      "import": "./lib/esm/mockup.js",
+      "require": "./lib/cjs/mockup.js"
+    },
+    "./popup": {
+      "types": "./lib/esm/popup.d.ts",
+      "import": "./lib/esm/popup.js",
+      "require": "./lib/cjs/popup.js"
+    },
+    "./rectangle": {
+      "types": "./lib/esm/rectangle.d.ts",
+      "import": "./lib/esm/rectangle.js",
+      "require": "./lib/cjs/rectangle.js"
+    },
+    "./style": {
+      "types": "./lib/esm/style.d.ts",
+      "import": "./lib/esm/style.js",
+      "require": "./lib/cjs/style.js"
     }
   },
   "directories": {
@@ -24,16 +55,21 @@
   },
   "scripts": {
     "dev": "npm run clean && tsc -p tsconfig.json --watch",
-    "build": "npm run clean && tsc -p tsconfig.json && tsc -p tsconfig-cjs.json",
+    "build": "npm run clean && tsc-esm -p tsconfig.json && tsc-esm -p tsconfig-cjs.json",
     "clean": "rimraf ./lib",
     "prepublish": "npm run build"
   },
   "author": "Nanang Mahdaen El Agung <mahdaen@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@digitak/tsc-esm": "^3.1.4",
     "rimraf": "^4.1.2",
     "ts-toolbelt": "^9.6.0",
     "typedoc": "^0.23.24",
     "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@beerush/reactor": "^0.10.2",
+    "@beerush/utils": "^0.1.0"
   }
 }

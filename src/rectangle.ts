@@ -5,6 +5,8 @@ export type OffsetRect = {
   bottom: number;
   width: number;
   height: number;
+  centerX: number;
+  centerY: number;
 }
 
 export type ScaledDOMRect = OffsetRect & {
@@ -13,7 +15,8 @@ export type ScaledDOMRect = OffsetRect & {
 }
 
 /**
- * Generate a fixed positioning bounds of an element, relative to the window viewport or a parent element.
+ * Generate a fixed positioning bounds of an element, relative to the given element, window viewport, or the parent
+ * element.
  * Return an element size, and the distance between the bounding box of the element and the target element/viewport.
  * For example, left is the distance between element's left bounding with the parent/viewport left bounding.
  * @param {HTMLElement} element
@@ -23,28 +26,32 @@ export type ScaledDOMRect = OffsetRect & {
  */
 export function offsets(element: HTMLElement, relativeTo?: HTMLElement | boolean, scale = 1): OffsetRect {
   if (relativeTo) {
-    const relation: HTMLElement = typeof relativeTo === 'boolean'
-                                  ? element.parentElement as HTMLElement
-                                  : relativeTo as HTMLElement;
+    const parent: HTMLElement = typeof relativeTo === 'boolean'
+                                ? element.parentElement as HTMLElement
+                                : relativeTo as HTMLElement;
 
-    if (relation && typeof relation.getBoundingClientRect === 'function') {
+    if (parent && typeof parent.getBoundingClientRect === 'function') {
       const { left: eLeft, top: eTop, width, height } = scaledBoundingClientRect(element, scale);
-      const { left: rLeft, top: rTop, width: rWidth, height: rHeight } = scaledBoundingClientRect(relation, scale);
+      const { left: rLeft, top: rTop, width: rWidth, height: rHeight } = scaledBoundingClientRect(parent, scale);
 
       const left = Math.round(eLeft - rLeft);
       const top = Math.round(eTop - rTop);
       const right = Math.round(rWidth - (left + width));
       const bottom = Math.round(rHeight - (top + height));
+      const centerX = Math.round(left + (width / 2));
+      const centerY = Math.round(top + (height / 2));
 
-      return { width, height, left, top, right, bottom };
+      return { width, height, left, top, right, bottom, centerX, centerY };
     } else {
       throw new Error('Invalid relativeTo argument. Must be boolean or HTML Element!');
     }
   } else {
     const { left, top, right, bottom, width, height } = scaledBoundingClientRect(element, scale);
     const { innerWidth, innerHeight } = window;
+    const centerX = Math.round(left + (width / 2));
+    const centerY = Math.round(top + (height / 2));
     return {
-      width, height, left, top,
+      width, height, left, top, centerX, centerY,
       right: Math.round((innerWidth / scale) - right),
       bottom: Math.round((innerHeight / scale) - bottom),
     };
@@ -78,8 +85,17 @@ export function scaledClientRects(element: HTMLElement, scale = 1): ScaledDOMRec
   return scaled;
 }
 
+/**
+ * Scale, round, and extend the given DOMRect.
+ * @param {DOMRect} rect
+ * @param {number} scale
+ * @returns {ScaledDOMRect}
+ */
 export function scaleRect(rect: DOMRect, scale = 1): ScaledDOMRect {
   const { left, top, right, bottom, width, height, x, y } = rect;
+  const centerX = Math.round((left / scale) + ((width / scale) / 2));
+  const centerY = Math.round((top / scale) + ((height / scale) / 2));
+
   return {
     left: Math.round(left / scale),
     top: Math.round(top / scale),
@@ -89,5 +105,7 @@ export function scaleRect(rect: DOMRect, scale = 1): ScaledDOMRect {
     height: Math.round(height / scale),
     x: Math.round(x / scale),
     y: Math.round(y / scale),
+    centerX,
+    centerY,
   };
 }
