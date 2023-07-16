@@ -233,3 +233,17 @@ export function restore(options: PopupOptions, debounce?: number) {
     parent.appendChild(element);
   }
 }
+
+export function appendTo(target: HTMLElement | string, element: HTMLElement) {
+  if (typeof target === 'string') {
+    const wrapper = document.querySelector(target);
+
+    if (wrapper) {
+      wrapper.appendChild(element);
+    } else {
+      document.body.appendChild(element);
+    }
+  } else {
+    target.appendChild(element);
+  }
+}
