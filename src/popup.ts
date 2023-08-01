@@ -19,7 +19,30 @@ export type PopupOptions = {
   swap?: boolean;
   /** Space (margin) to apply to the element position after positioned relative to the parent */
   space?: number;
+  observe?: boolean;
 };
+
+export type CreatePopupOptions = {
+  action: 'hover' | 'click';
+  options: PopupOptions;
+  container?: string;
+  overlay?: HTMLElement;
+}
+
+export type CreateDialogOptions = {
+  container?: string;
+  overlay?: HTMLElement;
+}
+
+export type PopupInstance = {
+  show: (e?: MouseEvent, cb?: () => void) => void;
+  hide: (e?: MouseEvent, cb?: () => void) => void;
+  update: (options: CreatePopupOptions) => void;
+  destroy: () => void;
+  disconnect?: () => void;
+};
+
+const observers = new WeakMap<HTMLElement, ResizeObserver>();
 
 /**
  * Apply a fixed position bounds of the given element, relative to the given parent element.
@@ -59,16 +82,16 @@ export function popup(options: PopupOptions) {
 
     if (offSide) {
       if (swap) {
-        styles.left = `${left + width}px`;
+        styles.left = `${ left + width }px`;
       } else {
         styles.left = '0';
       }
 
-      styles.marginLeft = `${space}px`;
+      styles.marginLeft = `${ space }px`;
       element.classList.add('x-after');
     } else {
-      styles.right = `${right + width}px`;
-      styles.marginRight = `${space}px`;
+      styles.right = `${ right + width }px`;
+      styles.marginRight = `${ space }px`;
       element.classList.add('x-before');
     }
   } else if (xDir === 'after') {
@@ -76,16 +99,16 @@ export function popup(options: PopupOptions) {
 
     if (offSide) {
       if (swap) {
-        styles.right = `${right + width}px`;
+        styles.right = `${ right + width }px`;
       } else {
         styles.right = '0';
       }
 
-      styles.marginRight = `${space}px`;
+      styles.marginRight = `${ space }px`;
       element.classList.add('x-before');
     } else {
-      styles.left = `${left + width}px`;
-      styles.marginLeft = `${space}px`;
+      styles.left = `${ left + width }px`;
+      styles.marginLeft = `${ space }px`;
       element.classList.add('x-after');
     }
   } else if (xDir === 'between') {
@@ -93,23 +116,23 @@ export function popup(options: PopupOptions) {
     const offsideRight = centerX + elWidth / 2 > innerWidth;
 
     if (offsideLeft) {
-      styles.left = `${space}px`;
-      styles.maxWidth = `${innerWidth - space * 2}px`;
+      styles.left = `${ space }px`;
+      styles.maxWidth = `${ innerWidth - space * 2 }px`;
       element.classList.add('x-screen-left');
     } else if (offsideRight) {
-      styles.right = `${space}px`;
-      styles.maxWidth = `${innerWidth - space * 2}px`;
+      styles.right = `${ space }px`;
+      styles.maxWidth = `${ innerWidth - space * 2 }px`;
       element.classList.add('x-screen-right');
     } else {
-      styles.left = `${centerX}px`;
+      styles.left = `${ centerX }px`;
       tx = '-50%';
       element.classList.add('x-between');
     }
   } else if (xDir === 'left') {
-    styles.left = `${left}px`;
+    styles.left = `${ left }px`;
     element.classList.add('x-left');
   } else if (xDir === 'right') {
-    styles.right = `${right}px`;
+    styles.right = `${ right }px`;
     element.classList.add('x-right');
   }
 
@@ -118,16 +141,16 @@ export function popup(options: PopupOptions) {
 
     if (offSide) {
       if (swap) {
-        styles.top = `${top + height}px`;
+        styles.top = `${ top + height }px`;
       } else {
         styles.top = '0';
       }
 
-      styles.marginTop = `${space}px`;
+      styles.marginTop = `${ space }px`;
       element.classList.add('y-below');
     } else {
-      styles.bottom = `${bottom + height}px`;
-      styles.marginBottom = `${space}px`;
+      styles.bottom = `${ bottom + height }px`;
+      styles.marginBottom = `${ space }px`;
       element.classList.add('y-above');
     }
   } else if (yDir === 'below') {
@@ -135,17 +158,17 @@ export function popup(options: PopupOptions) {
 
     if (offSide) {
       if (swap) {
-        styles.bottom = `${bottom + height}px`;
+        styles.bottom = `${ bottom + height }px`;
         element.classList.add('y-below');
       } else {
         styles.bottom = '0';
       }
 
-      styles.marginBottom = `${space}px`;
+      styles.marginBottom = `${ space }px`;
       element.classList.add('y-above');
     } else {
-      styles.top = `${top + height}px`;
-      styles.marginTop = `${space}px`;
+      styles.top = `${ top + height }px`;
+      styles.marginTop = `${ space }px`;
       element.classList.add('y-below');
     }
   } else if (yDir === 'between') {
@@ -153,27 +176,27 @@ export function popup(options: PopupOptions) {
     const offsideBottom = centerY + elHeight / 2 > innerHeight;
 
     if (offsideTop) {
-      styles.top = `${space}px`;
-      styles.maxHeight = `${innerHeight - space * 2}px`;
+      styles.top = `${ space }px`;
+      styles.maxHeight = `${ innerHeight - space * 2 }px`;
       element.classList.add('y-screen-top');
     } else if (offsideBottom) {
-      styles.bottom = `${space}px`;
-      styles.maxHeight = `${innerHeight - space * 2}px`;
+      styles.bottom = `${ space }px`;
+      styles.maxHeight = `${ innerHeight - space * 2 }px`;
       element.classList.add('y-screen-bottom');
     } else {
-      styles.top = `${centerY}px`;
+      styles.top = `${ centerY }px`;
       ty = '-50%';
       element.classList.add('y-between');
     }
   } else if (yDir === 'top') {
-    styles.top = `${top}px`;
+    styles.top = `${ top }px`;
     element.classList.add('y-top');
   } else if (yDir === 'bottom') {
-    styles.bottom = `${bottom}px`;
+    styles.bottom = `${ bottom }px`;
     element.classList.add('y-bottom');
   }
 
-  styles.transform = `translate3d(${tx}, ${ty}, 0)`;
+  styles.transform = `translate3d(${ tx }, ${ ty }, 0)`;
   style(element, styles);
 }
 
@@ -184,12 +207,22 @@ export function popup(options: PopupOptions) {
  * @param debounce - Delay before applying the styles.
  */
 export function popTo(slot: string, options: PopupOptions, debounce?: number) {
-  const { element } = options;
+  const { element, observe } = options;
 
   if (!element) {
     console.warn('Popup ignored because the given element in the options is not an HTML Element.');
     return;
   }
+
+  const apply = () => {
+    if (typeof debounce === 'number') {
+      setTimeout(() => {
+        popup(options);
+      }, debounce);
+    } else {
+      popup(options);
+    }
+  };
 
   const wrapper = document.querySelector(slot);
 
@@ -199,12 +232,30 @@ export function popTo(slot: string, options: PopupOptions, debounce?: number) {
     document.body.appendChild(element);
   }
 
-  if (typeof debounce === 'number') {
-    setTimeout(() => {
-      popup(options);
-    }, debounce);
-  } else {
-    popup(options);
+  apply();
+
+  if (observe) {
+    let { innerWidth, innerHeight } = window;
+    let caller: number;
+
+    const observer = new ResizeObserver(() => {
+      if (caller) {
+        clearTimeout(caller);
+      }
+
+      caller = setTimeout(() => {
+        const { innerWidth: width, innerHeight: height } = window;
+
+        if (width !== innerWidth || height !== innerHeight) {
+          innerWidth = width;
+          innerHeight = height;
+          apply();
+        }
+      }, 300) as never;
+    });
+
+    observer.observe(document.body);
+    observers.set(element, observer);
   }
 }
 
@@ -232,8 +283,19 @@ export function restore(options: PopupOptions, debounce?: number) {
   } else {
     parent.appendChild(element);
   }
+
+  const observer = observers.get(element);
+  if (observer) {
+    observer.disconnect();
+    observers.delete(element);
+  }
 }
 
+/**
+ * Move the given element to the given target.
+ * @param {HTMLElement | string} target
+ * @param {HTMLElement} element
+ */
 export function appendTo(target: HTMLElement | string, element: HTMLElement) {
   if (typeof target === 'string') {
     const wrapper = document.querySelector(target);
@@ -246,4 +308,146 @@ export function appendTo(target: HTMLElement | string, element: HTMLElement) {
   } else {
     target.appendChild(element);
   }
+}
+
+/**
+ * Create a popup instance.
+ * @param {HTMLElement} element
+ * @param {CreatePopupOptions} config
+ * @returns {PopupInstance}
+ */
+export function createPopup(element: HTMLElement, config: CreatePopupOptions): PopupInstance {
+  let { action, container = 'body', overlay } = config;
+
+  const parent = element.parentElement as HTMLElement;
+  const options = { ...config.options, element: element, parent } as PopupOptions;
+
+  const show = (e?: MouseEvent, cb?: () => void) => {
+    if (overlay) {
+      overlay.addEventListener('click', hide);
+
+      appendTo(container, overlay);
+    }
+
+    popTo(container, options);
+
+    if (action === 'click' && !overlay) {
+      parent.style.pointerEvents = 'none';
+
+      setTimeout(() => {
+        window.addEventListener('click', hide);
+      }, 100);
+    }
+
+    if (typeof cb === 'function') {
+      cb();
+    }
+  };
+
+  const hide = (e?: MouseEvent, cb?: () => void) => {
+    if (overlay) {
+      overlay.removeEventListener('click', hide);
+
+      appendTo(parent, overlay);
+    }
+
+    restore(options);
+
+    if (action === 'click' && !overlay) {
+      parent.style.removeProperty('pointer-events');
+
+      setTimeout(() => {
+        window.removeEventListener('click', hide);
+      }, 100);
+    }
+
+    if (typeof cb === 'function') {
+      cb();
+    }
+  };
+
+  const disconnect = () => {
+    parent.removeEventListener('mouseenter', show);
+    parent.removeEventListener('mouseleave', hide);
+    parent.removeEventListener('click', show);
+    parent.removeEventListener('click', hide);
+    window.removeEventListener('click', hide);
+  };
+
+  if (action === 'hover') {
+    parent.addEventListener('mouseenter', show);
+    parent.addEventListener('mouseleave', hide);
+    parent.addEventListener('click', hide);
+  } else if (action === 'click') {
+    parent.addEventListener('click', show);
+  }
+
+  return {
+    show,
+    hide,
+    disconnect,
+    update(cfg: CreatePopupOptions) {
+      action = cfg.action;
+      overlay = cfg.overlay;
+      container = cfg.container || 'body';
+    },
+    destroy() {
+      disconnect();
+      element.remove();
+
+      if (overlay) {
+        overlay.remove();
+      }
+    }
+  };
+}
+
+/**
+ * Create a dialog instance.
+ * @param {HTMLElement} element
+ * @param {CreateDialogOptions} options
+ * @returns {PopupInstance}
+ */
+export function createDialog(element: HTMLElement, options: CreateDialogOptions): PopupInstance {
+  let { container = '.dialog-container', overlay } = options;
+  const parent = element.parentElement as HTMLElement;
+
+  const show = (e?: MouseEvent, cb?: () => void) => {
+    if (overlay) {
+      appendTo(container, overlay);
+    }
+
+    appendTo(container, element);
+
+    if (typeof cb === 'function') {
+      cb();
+    }
+  };
+
+  const hide = (e?: MouseEvent, cb?: () => void) => {
+    if (overlay) {
+      appendTo(parent, overlay);
+    }
+
+    appendTo(parent, element);
+
+    if (typeof cb === 'function') {
+      cb();
+    }
+  };
+
+  return {
+    show, hide,
+    update(cfg: CreatePopupOptions) {
+      overlay = cfg.overlay;
+      container = cfg.container || '.dialog-container';
+    },
+    destroy() {
+      element.remove();
+
+      if (overlay) {
+        overlay.remove();
+      }
+    }
+  };
 }
