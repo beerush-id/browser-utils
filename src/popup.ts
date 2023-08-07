@@ -35,8 +35,8 @@ export type CreateDialogOptions = {
 }
 
 export type PopupInstance = {
-  show: (e?: MouseEvent, cb?: () => void) => void;
-  hide: (e?: MouseEvent, cb?: () => void) => void;
+  show: (e?: MouseEvent, cb?: (t: 'open' | 'close', e?: MouseEvent) => void) => void;
+  hide: (e?: MouseEvent, cb?: (t: 'open' | 'close', e?: MouseEvent) => void) => void;
   update: (options: CreatePopupOptions) => void;
   destroy: () => void;
   disconnect?: () => void;
@@ -322,7 +322,7 @@ export function createPopup(element: HTMLElement, config: CreatePopupOptions): P
   const parent = element.parentElement as HTMLElement;
   const options = { ...config.options, element: element, parent } as PopupOptions;
 
-  const show = (e?: MouseEvent, cb?: () => void) => {
+  const show = (e?: MouseEvent, cb?: (t: 'open' | 'close', e?: MouseEvent) => void) => {
     if (overlay) {
       overlay.addEventListener('click', hide);
 
@@ -340,11 +340,11 @@ export function createPopup(element: HTMLElement, config: CreatePopupOptions): P
     }
 
     if (typeof cb === 'function') {
-      cb();
+      cb('open', e);
     }
   };
 
-  const hide = (e?: MouseEvent, cb?: () => void) => {
+  const hide = (e?: MouseEvent, cb?: (t: 'open' | 'close', e?: MouseEvent) => void) => {
     if (overlay) {
       overlay.removeEventListener('click', hide);
 
@@ -362,7 +362,7 @@ export function createPopup(element: HTMLElement, config: CreatePopupOptions): P
     }
 
     if (typeof cb === 'function') {
-      cb();
+      cb('close', e);
     }
   };
 
@@ -408,33 +408,58 @@ export function createPopup(element: HTMLElement, config: CreatePopupOptions): P
  * @param {CreateDialogOptions} options
  * @returns {PopupInstance}
  */
-export function createDialog(element: HTMLElement, options: CreateDialogOptions): PopupInstance {
+export function createDialog(element: HTMLDialogElement, options: CreateDialogOptions): PopupInstance {
   let { container = '.dialog-container', overlay } = options;
-  const parent = element.parentElement as HTMLElement;
+  const parent = element.parentElement as HTMLDialogElement;
 
-  const show = (e?: MouseEvent, cb?: () => void) => {
+  const show = (e?: MouseEvent, cb?: (t: 'open' | 'close', e?: MouseEvent) => void) => {
     if (overlay) {
       appendTo(container, overlay);
     }
 
-    appendTo(container, element);
+    if (element instanceof HTMLDialogElement) {
+      element.showModal();
+    } else {
+      appendTo(container, element);
+    }
 
     if (typeof cb === 'function') {
-      cb();
+      cb('open', e);
     }
   };
 
-  const hide = (e?: MouseEvent, cb?: () => void) => {
+  const hide = (e?: MouseEvent, cb?: (t: 'open' | 'close', e?: MouseEvent) => void) => {
     if (overlay) {
       appendTo(parent, overlay);
     }
 
-    appendTo(parent, element);
+    if (element instanceof HTMLDialogElement) {
+      element.close();
+    } else {
+      appendTo(parent, element);
+    }
 
     if (typeof cb === 'function') {
-      cb();
+      cb('close', e);
     }
   };
+
+  const cleanup = () => {
+    if (overlay) {
+      appendTo(parent, overlay);
+    }
+  };
+
+  const backdropClick = (e: MouseEvent) => {
+    if (isBackdropClick(e)) {
+      hide(e);
+    }
+  };
+
+  if (element instanceof HTMLDialogElement) {
+    element.addEventListener('close', cleanup);
+    element.addEventListener('click', backdropClick);
+  }
 
   return {
     show, hide,
@@ -444,10 +469,23 @@ export function createDialog(element: HTMLElement, options: CreateDialogOptions)
     },
     destroy() {
       element.remove();
+      element.removeEventListener('close', cleanup);
+      element.removeEventListener('click', backdropClick);
 
       if (overlay) {
         overlay.remove();
       }
     }
   };
+}
+
+export function isBackdropClick(event: MouseEvent): boolean {
+  const target = event.target as HTMLElement;
+
+  if (target) {
+    const rect = target.getBoundingClientRect();
+    return (rect.left > event.clientX || rect.right < event.clientX) || (rect.top > event.clientY || rect.bottom < event.clientY);
+  }
+
+  return false;
 }
