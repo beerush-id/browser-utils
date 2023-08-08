@@ -1,5 +1,5 @@
-import { offsets, scaledBoundingClientRect } from './rectangle';
-import { style } from './style';
+import { offsets, scaledBoundingClientRect } from './rectangle.js';
+import { style } from './style.js';
 
 export type DirectionX = 'before' | 'after' | 'between' | 'left' | 'right';
 export type DirectionY = 'above' | 'below' | 'between' | 'top' | 'bottom';

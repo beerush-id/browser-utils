@@ -29,7 +29,7 @@ export class Mockup {
   public expandedHeaderMenu?: boolean;
   public collapsibleHeader?: boolean;
 
-  constructor(public devices: DeviceMockup[], use: string = 'laptop') {
+  constructor(public devices: DeviceMockup[], use = 'laptop') {
     this.use(use);
   }
 

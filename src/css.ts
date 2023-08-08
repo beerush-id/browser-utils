@@ -1,4 +1,4 @@
-import { ItemTypeOf } from '@beerush/reactor';
+import type { ItemTypeOf } from '@beerush/reactor';
 import { dash, isNumber, isObject, isString } from '@beerush/utils';
 
 export type Unit = 'px' | '%' | 'em' | 'rem' | 'vw' | 'vh' | string;
@@ -120,7 +120,6 @@ export const filterUnits: Filters = {
   sepia: '%',
 };
 
-
 export type JoinClasses<A extends string[], B extends string[]> = [ ...A, ...B ];
 
 export class ClassList<T extends string[] = string[], O extends string[] = []> {
@@ -156,7 +155,6 @@ export class ClassList<T extends string[] = string[], O extends string[] = []> {
 export function classes<R extends string[] = string[], O extends string[] = string[]>(...classes: R): ClassList<R, O> {
   return new ClassList(classes);
 }
-
 
 /**
  * Convert **`CSSDeclaration`** object to CSS String with supported nested declarations.
@@ -399,9 +397,9 @@ export function joinTransforms({ scale, rotate, translate, skew }: ExtendedStyle
 
 /**
  * Convert **`StylerOptions`** object to CSS String.
- * @param {"linear" | "radial"} type
+ * @param {'linear' | 'radial'} type
  * @param {number | undefined} angle
- * @param {"circle" | "ellipse" | "closest-side" | "closest-corner" | "farthest-side" | "farthest-corner" | undefined} shape
+ * @param {'circle' | 'ellipse' | 'closest-side' | 'closest-corner' | 'farthest-side' | 'farthest-corner' | undefined} shape
  * @param {GradientValue[]} values
  * @returns {string}
  */

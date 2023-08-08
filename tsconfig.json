@@ -6,15 +6,17 @@
       "ES2020",
       "DOM"
     ],
-    "module": "ES2020",
-    "moduleResolution": "node",
+    "module": "esnext",
+    "moduleResolution": "nodenext",
     "declaration": true,
     "sourceMap": false,
     "removeComments": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["./src"],
   "exclude": ["node_modules", "**/*.spec.ts", "jest.config.js"]

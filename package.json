@@ -54,22 +54,21 @@
     "access": "public"
   },
   "scripts": {
-    "dev": "npm run clean && tsc -p tsconfig.json --watch",
-    "build": "npm run clean && tsc-esm -p tsconfig.json && tsc-esm -p tsconfig-cjs.json",
-    "clean": "rimraf ./lib",
+    "dev": "esdev --watch",
+    "build": "esdev --clean",
     "prepublish": "npm run build"
   },
   "author": "Nanang Mahdaen El Agung <mahdaen@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "@digitak/tsc-esm": "^3.1.4",
-    "rimraf": "^4.1.2",
+    "@beerush/esdev": "*",
     "ts-toolbelt": "^9.6.0",
     "typedoc": "^0.23.24",
-    "typescript": "^4.9.5"
+    "typescript": "^5.1.6"
   },
   "dependencies": {
-    "@beerush/reactor": "^0.10.2",
-    "@beerush/utils": "^0.1.0"
-  }
+    "@beerush/reactor": "*",
+    "@beerush/utils": "*"
+  },
+  "type": "module"
 }

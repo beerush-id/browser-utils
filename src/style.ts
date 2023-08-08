@@ -10,7 +10,7 @@ export function style(element: HTMLElement, styles: Partial<CSSStyleDeclaration>
   }
 
   for (const [ key, value ] of Object.entries(styles)) {
-    let val = typeof value === 'number' ? (value > 0 ? `${ value }px` : `${ value }`) : value;
+    const val = typeof value === 'number' ? (value > 0 ? `${ value }px` : `${ value }`) : value;
 
     if (val) {
       element.style[key as never] = value as never;
