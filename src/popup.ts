@@ -451,7 +451,7 @@ export function createDialog(element: HTMLDialogElement, options: CreateDialogOp
   };
 
   const backdropClick = (e: MouseEvent) => {
-    if (isBackdropClick(e)) {
+    if (!(e.target instanceof HTMLSelectElement) && isBackdropClick(e)) {
       hide(e);
     }
   };
