@@ -6,9 +6,9 @@ export type DirectionY = 'above' | 'below' | 'between' | 'top' | 'bottom';
 
 export type PopupOptions = {
   /** HTML Element to apply the styles to */
-  element: HTMLElement;
+  element?: HTMLElement;
   /** HTML Element to apply the relative styles from */
-  parent: HTMLElement;
+  parent?: HTMLElement;
   /** The horizontal position of the element from the parent */
   xDir?: DirectionX;
   /** The vertical position of the element from the parent */
@@ -23,7 +23,7 @@ export type PopupOptions = {
 };
 
 export type CreatePopupOptions = {
-  action: 'hover' | 'click';
+  action: 'hover' | 'click' | string;
   options: PopupOptions;
   container?: string;
   overlay?: HTMLElement;
@@ -60,7 +60,7 @@ export function popup(options: PopupOptions) {
   } = options;
   if (!element || !parent) {
     console.warn(
-      'Popup ignored because the given element/parent in the options is not an HTML Element.'
+      'Popup ignored because the given element/parent in the options is not an HTML Element.',
     );
     return;
   }
@@ -70,7 +70,7 @@ export function popup(options: PopupOptions) {
   const { left, top, right, bottom, width, height, centerX, centerY } = offsets(
     parent,
     false,
-    scale
+    scale,
   );
 
   const styles: Partial<CSSStyleDeclaration> = {};
@@ -82,16 +82,16 @@ export function popup(options: PopupOptions) {
 
     if (offSide) {
       if (swap) {
-        styles.left = `${ left + width }px`;
+        styles.left = `${left + width}px`;
       } else {
         styles.left = '0';
       }
 
-      styles.marginLeft = `${ space }px`;
+      styles.marginLeft = `${space}px`;
       element.classList.add('x-after');
     } else {
-      styles.right = `${ right + width }px`;
-      styles.marginRight = `${ space }px`;
+      styles.right = `${right + width}px`;
+      styles.marginRight = `${space}px`;
       element.classList.add('x-before');
     }
   } else if (xDir === 'after') {
@@ -99,16 +99,16 @@ export function popup(options: PopupOptions) {
 
     if (offSide) {
       if (swap) {
-        styles.right = `${ right + width }px`;
+        styles.right = `${right + width}px`;
       } else {
         styles.right = '0';
       }
 
-      styles.marginRight = `${ space }px`;
+      styles.marginRight = `${space}px`;
       element.classList.add('x-before');
     } else {
-      styles.left = `${ left + width }px`;
-      styles.marginLeft = `${ space }px`;
+      styles.left = `${left + width}px`;
+      styles.marginLeft = `${space}px`;
       element.classList.add('x-after');
     }
   } else if (xDir === 'between') {
@@ -116,23 +116,23 @@ export function popup(options: PopupOptions) {
     const offsideRight = centerX + elWidth / 2 > innerWidth;
 
     if (offsideLeft) {
-      styles.left = `${ space }px`;
-      styles.maxWidth = `${ innerWidth - space * 2 }px`;
+      styles.left = `${space}px`;
+      styles.maxWidth = `${innerWidth - space * 2}px`;
       element.classList.add('x-screen-left');
     } else if (offsideRight) {
-      styles.right = `${ space }px`;
-      styles.maxWidth = `${ innerWidth - space * 2 }px`;
+      styles.right = `${space}px`;
+      styles.maxWidth = `${innerWidth - space * 2}px`;
       element.classList.add('x-screen-right');
     } else {
-      styles.left = `${ centerX }px`;
+      styles.left = `${centerX}px`;
       tx = '-50%';
       element.classList.add('x-between');
     }
   } else if (xDir === 'left') {
-    styles.left = `${ left }px`;
+    styles.left = `${left}px`;
     element.classList.add('x-left');
   } else if (xDir === 'right') {
-    styles.right = `${ right }px`;
+    styles.right = `${right}px`;
     element.classList.add('x-right');
   }
 
@@ -141,16 +141,16 @@ export function popup(options: PopupOptions) {
 
     if (offSide) {
       if (swap) {
-        styles.top = `${ top + height }px`;
+        styles.top = `${top + height}px`;
       } else {
         styles.top = '0';
       }
 
-      styles.marginTop = `${ space }px`;
+      styles.marginTop = `${space}px`;
       element.classList.add('y-below');
     } else {
-      styles.bottom = `${ bottom + height }px`;
-      styles.marginBottom = `${ space }px`;
+      styles.bottom = `${bottom + height}px`;
+      styles.marginBottom = `${space}px`;
       element.classList.add('y-above');
     }
   } else if (yDir === 'below') {
@@ -158,17 +158,17 @@ export function popup(options: PopupOptions) {
 
     if (offSide) {
       if (swap) {
-        styles.bottom = `${ bottom + height }px`;
+        styles.bottom = `${bottom + height}px`;
         element.classList.add('y-below');
       } else {
         styles.bottom = '0';
       }
 
-      styles.marginBottom = `${ space }px`;
+      styles.marginBottom = `${space}px`;
       element.classList.add('y-above');
     } else {
-      styles.top = `${ top + height }px`;
-      styles.marginTop = `${ space }px`;
+      styles.top = `${top + height}px`;
+      styles.marginTop = `${space}px`;
       element.classList.add('y-below');
     }
   } else if (yDir === 'between') {
@@ -176,27 +176,27 @@ export function popup(options: PopupOptions) {
     const offsideBottom = centerY + elHeight / 2 > innerHeight;
 
     if (offsideTop) {
-      styles.top = `${ space }px`;
-      styles.maxHeight = `${ innerHeight - space * 2 }px`;
+      styles.top = `${space}px`;
+      styles.maxHeight = `${innerHeight - space * 2}px`;
       element.classList.add('y-screen-top');
     } else if (offsideBottom) {
-      styles.bottom = `${ space }px`;
-      styles.maxHeight = `${ innerHeight - space * 2 }px`;
+      styles.bottom = `${space}px`;
+      styles.maxHeight = `${innerHeight - space * 2}px`;
       element.classList.add('y-screen-bottom');
     } else {
-      styles.top = `${ centerY }px`;
+      styles.top = `${centerY}px`;
       ty = '-50%';
       element.classList.add('y-between');
     }
   } else if (yDir === 'top') {
-    styles.top = `${ top }px`;
+    styles.top = `${top}px`;
     element.classList.add('y-top');
   } else if (yDir === 'bottom') {
-    styles.bottom = `${ bottom }px`;
+    styles.bottom = `${bottom}px`;
     element.classList.add('y-bottom');
   }
 
-  styles.transform = `translate3d(${ tx }, ${ ty }, 0)`;
+  styles.transform = `translate3d(${tx}, ${ty}, 0)`;
   style(element, styles);
 }
 
@@ -269,7 +269,7 @@ export function restore(options: PopupOptions, debounce?: number) {
 
   if (!element || !parent) {
     console.warn(
-      'Popup ignored because the given element/parent in the options is not an HTML Element.'
+      'Popup ignored because the given element/parent in the options is not an HTML Element.',
     );
     return;
   }
@@ -398,7 +398,7 @@ export function createPopup(element: HTMLElement, config: CreatePopupOptions): P
       if (overlay) {
         overlay.remove();
       }
-    }
+    },
   };
 }
 
@@ -475,7 +475,7 @@ export function createDialog(element: HTMLDialogElement, options: CreateDialogOp
       if (overlay) {
         overlay.remove();
       }
-    }
+    },
   };
 }
 
